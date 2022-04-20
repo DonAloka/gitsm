@@ -1,5 +1,5 @@
 commit () {
-    echo "Enter the sub module directory; example use the / command"#change the capital simple
+    echo "Enter the sub module directory; example use the / command"
     read text
     echo "Enter the commit"
     read COMMIT
