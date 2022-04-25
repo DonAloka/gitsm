@@ -4,28 +4,46 @@ commit () {
     echo "Enter the commit"
     read COMMIT
 
-    cd $text
+    STR1="default"    
+    STR1=$text
+
 
     IFS='/'
     read -a strarr <<< "$text"
-    echo ${#strarr[@]}
+    echo ${#strarr[@]}    
 
-
-    for val in "${strarr[@]}";
-    do
-    git add .
-    git commit -m "$COMMIT"
-    git push -u origin main  
-    cd ..
-    done
-    echo "loop complete"
-    git add .
-    git commit -m "$COMMIT"
-    git push -u origin main
+    if [[ ${#strarr[@]} -gt 0 ]]
+    then
+        cd $STR1
+        for val in "${strarr[@]}";
+        do
+            git add .
+            git commit -m "$COMMIT"
+            git push -u origin main  
+            cd ..
+        done
+        echo "loop complete"
+        git add .
+        git commit -m "$COMMIT"
+        git push -u origin main
+        
+    else
+        
+        git add .
+        git commit -m $COMMIT
+        git push -u origin main
+    fi
+ 
 }
 
 status(){
     git status  
+}
+
+clone(){
+    echo "Enter the main repository url"
+    read clone_url
+    git clone --recurse-submodule $clone_url
 }
 
 delete(){
@@ -70,25 +88,59 @@ delete(){
 
 }
 
+add(){
+    echo "Enter the sub module directory; example use the / command"#change the capital simple
+    read add_directory
+    echo "Enter the remote url"
+    read add_url
+
+    STR2="default"    
+    STR2=$add_directory
+
+    a=($(echo $add_directory | tr '/' "\n"))  
+ 
+    if [[ ${#a} -gt 0 ]]
+    then        
+        cd $STR2
+        git submodule add $add_url
+    else        
+        git submodule add $add_url
+    fi
+
+    commit
+
+  
+}
+
 while true
  do
  PS3='Please enter your selection: '
- options=("SubModule commit" "SubModule status" "SubModule remove" "Quit")
+ options=("SubModule Repository clone" "SubModule add" "SubModule commit" "SubModule status" "SubModule remove" "Quit")
  select opt in "${options[@]}" 
  do
      case $opt in
-         "SubModule commit")
+        "SubModule Repository clone")
              echo "you chose option 1"
+             clone
+             break
+             ;;
+         "SubModule add")
+             echo "you chose option 2"
+             add
+             break
+             ;;
+         "SubModule commit")
+             echo "you chose option 3"
              commit
              break
              ;;
          "SubModule status")
-             echo "you chose option 2"
+             echo "you chose option 4"
              status
              break
              ;;
          "SubModule remove")
-             echo "you chose option 3"
+             echo "you chose option 5"
              delete
              break
              ;;
